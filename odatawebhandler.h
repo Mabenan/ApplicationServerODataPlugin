@@ -2,6 +2,7 @@
 #define ODATAWEBHANDLER_H
 
 #include <WebInterface.h>
+#include "ODataURLParser.h"
 
 class ODataWebHandler : public WebInterface
 {
@@ -13,6 +14,7 @@ public:
     explicit ODataWebHandler(QObject *parent = nullptr);
 
 private:
+    ODataURLParser * urlParser;
     // WebInterface interface
 public:
      QString getName() const;

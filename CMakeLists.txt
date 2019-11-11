@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.5)
 set(target "ApplicationServerODataPlugin")
 project(${target} LANGUAGES CXX)
 
+add_definitions(-DAPPLICATIONSERVERODATAPLUGIN_LIBRARY)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 11)
@@ -25,3 +26,4 @@ target_include_directories(${target} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )    
 target_link_libraries(${target} ApplicationServerCore ApplicationServerInterface)
+add_subdirectory(tests)
