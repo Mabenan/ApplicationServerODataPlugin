@@ -19,7 +19,8 @@ add_library(${target} SHARED ${SRC})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 find_package(Qt5Core REQUIRED)
-qt5_use_modules(${target} Core)
+find_package(Qt5HttpServer REQUIRED)
+qt5_use_modules(${target} Core HttpServer)
 target_include_directories(${target} PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}
 )    
