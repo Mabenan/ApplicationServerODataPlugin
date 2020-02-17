@@ -1,12 +1,10 @@
 #include "odatawebhandler.h"
 #include <QDebug>
-#include "ODataServiceDocument.h"
 #include <QJsonDocument>
 
 ODataWebHandler::ODataWebHandler(QObject *parent)
     : WebInterface(parent)
 {
-    this->urlParser = new ODataURLParser(this);
 }
 
 QString ODataWebHandler::getName() const
@@ -16,20 +14,24 @@ QString ODataWebHandler::getName() const
 
 QHttpServerResponse ODataWebHandler::execute(const QHttpServerRequest *request, ApplicationServerInterface *app)
 {
-    if (request->url().path() == "/odata/")
+    if (!this->requestHandlers.contains(request->url().host()))
     {
+        qDebug() << "create request handler: " + request->url().host();
+        this->requestHandlers.insert(request->url().host(), new ODataRequestHandler(request->url().host(), "/odata/", this));
+    }
 
-        ODataServiceDocument * serviceDoc = new ODataServiceDocument(this);
-        serviceDoc->context = request->url().topLevelDomain() + "/odata/$metadata";
-        return serviceDoc->getJson();
-    }else if(request->url().path().toLower() == "/odata/$metadata"){
-        
-    }
-    else
+    ODataRequestHandler *requestHandler = this->requestHandlers[request->url().host()];
+
+    QVariant result = requestHandler->handleRequest(request->url(), request->query());
+    switch (result.type())
     {
-        this->urlParser->splitUpURL(request->url());
+    case QMetaType::QJsonObject:
+        return result.toJsonObject();
+        break;
+    default:
+        return result.toString();
+        break;
     }
-    return "It Works:" + request->query().toString();
 }
 
 QString ODataWebHandler::getRoute(ApplicationServerInterface *app)

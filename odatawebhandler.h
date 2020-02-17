@@ -2,19 +2,16 @@
 #define ODATAWEBHANDLER_H
 
 #include <WebInterface.h>
-#include "ODataURLParser.h"
+#include <request/odatarequesthandler.h>
 
 class ODataWebHandler : public WebInterface
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID WebInterface_iid FILE "ApplicationServerODataPlugin.json")
-    Q_INTERFACES(WebInterface)
-
 public:
     explicit ODataWebHandler(QObject *parent = nullptr);
 
 private:
-    ODataURLParser * urlParser;
+    QMap<QString, ODataRequestHandler *> requestHandlers;
     // WebInterface interface
 public:
      QString getName() const;
