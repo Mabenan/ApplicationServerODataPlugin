@@ -26,3 +26,5 @@ target_include_directories(${target} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )    
 target_link_libraries(${target} ApplicationServerCore ApplicationServerInterface ODataServer)
+install(TARGETS ${target} DESTINATION "${PLUGIN_FOLDER}")
+install(FILES ${HEADER} DESTINATION "${INCLUDE_FOLDER}")

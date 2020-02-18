@@ -21,8 +21,7 @@ QHttpServerResponse ODataWebHandler::execute(const QHttpServerRequest *request, 
     }
 
     ODataRequestHandler *requestHandler = this->requestHandlers[request->url().host()];
-
-    QVariant result = requestHandler->handleRequest(request->url(), request->query());
+    QVariant result = requestHandler->handleRequest(request->url(), request->query(), request->body(), static_cast<ODataRequestHandler::Method>(request->method()));
     switch (result.type())
     {
     case QMetaType::QJsonObject:
