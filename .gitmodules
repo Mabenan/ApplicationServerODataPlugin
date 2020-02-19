@@ -1,4 +1,0 @@
-[submodule "ODataServer"]
-	path = ODataServer
-	url = https://github.com/Mabenan/ODataServer
-	branch = i3

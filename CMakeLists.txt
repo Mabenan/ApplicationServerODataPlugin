@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
 
-add_subdirectory(ODataServer)
 set(target "ApplicationServerODataPlugin")
 project(${target} LANGUAGES CXX)
 
@@ -19,12 +18,20 @@ file(GLOB HEADER
 )
 add_library(${target} SHARED ${SRC})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
+if(WIN32)
+set(ApplicationServer_DIR "C:/Program Files (x86)/ApplicationServer/bin")
+else()
+set(ApplicationServer_DIR "/user/bin/")
+endif()
 find_package(Qt5Core REQUIRED)
-qt5_use_modules(${target} Core HttpServer)
+find_package(Qt5HttpServer REQUIRED)
+find_package(Qt5Xml REQUIRED)
+find_package(ApplicationServer)
+find_package(ODataServer)
+qt5_use_modules(${target} Core HttpServer Xml)
 target_include_directories(${target} PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}
 )    
 target_link_libraries(${target} ApplicationServerCore ApplicationServerInterface ODataServer)
-install(TARGETS ${target} DESTINATION "${PLUGIN_FOLDER}")
-install(FILES ${HEADER} DESTINATION "${INCLUDE_FOLDER}")
+install(TARGETS ${target} DESTINATION "${ApplicationServer_DIR}/plugins")
+install(FILES ${HEADER} DESTINATION "${ApplicationServer_DIR}/../include")
