@@ -1,5 +1,5 @@
 set(target "ApplicationServerODataPlugin")
-if(NOT DEFINED ${CMAKE_PROJECT_NAME})
+if(NOT CMAKE_PROJECT_NAME)
 project(${target} LANGUAGES CXX)
 endif()
 
