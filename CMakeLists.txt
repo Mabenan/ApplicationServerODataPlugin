@@ -27,8 +27,18 @@ find_package(ODataServer)
 endif()
 qt5_use_modules(${target} Core HttpServer Xml)
 target_include_directories(${target} PUBLIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}
+ PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${INCLUDE_FOLDER}>
 )    
 target_link_libraries(${target} ApplicationServerCore ApplicationServerInterface ODataServer)
-install(TARGETS ${target} DESTINATION ${PLUGIN_FOLDER})
+install(TARGETS ${target} EXPORT ${target} 
+LIBRARY DESTINATION "${LIB_FOLDER}"
+    ARCHIVE DESTINATION "${LIB_FOLDER}"
+    RUNTIME DESTINATION "${PLUGIN_FOLDER}"
+    INCLUDES DESTINATION "${INCLUDE_FOLDER}")
+install(
+  EXPORT ${target} 
+  DESTINATION ${LIB_FOLDER}
+  )
 install(FILES ${HEADER} DESTINATION ${INCLUDE_FOLDER})
