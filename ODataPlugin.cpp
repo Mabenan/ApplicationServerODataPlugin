@@ -12,3 +12,7 @@ void ODataPlugin::init(ApplicationServerInterface *app)
     app->registerWebInterface(new ODataWebHandler(this));
 }
 
+void ODataPlugin::install(ApplicationServerInterface * app)
+{
+
+}
