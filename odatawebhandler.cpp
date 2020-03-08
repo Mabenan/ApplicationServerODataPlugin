@@ -17,7 +17,13 @@ QHttpServerResponse ODataWebHandler::execute(const QHttpServerRequest *request, 
     if (!this->requestHandlers.contains(request->url().host()))
     {
         qDebug() << "create request handler: " + request->url().host();
-        this->requestHandlers.insert(request->url().host(), new ODataRequestHandler(request->url().host(), "/odata/", this));
+        QList<QObject *> schemas = app->getValues("ODATA_SCHEMA_MAP");
+        QMap<QString, ODataSchema *> schemaMap;
+        for(QObject * schemaGeneric: schemas){
+        	ODataSchema * schema = static_cast<ODataSchema *>(schemaGeneric);
+        	schemaMap.insert(schema->_namespace, schema);
+        }
+        this->requestHandlers.insert(request->url().host(), new ODataRequestHandler(request->url().host(), "/odata/", schemaMap, this));
     }
 
     ODataRequestHandler *requestHandler = this->requestHandlers[request->url().host()];
