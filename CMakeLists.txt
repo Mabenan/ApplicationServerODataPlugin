@@ -6,7 +6,6 @@ endif()
 add_definitions(-DODATASERVER_LIBRARY)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 file(GLOB SRC
@@ -31,6 +30,10 @@ target_include_directories(${target} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:${INCLUDE_FOLDER}>
 )    
+target_precompile_headers(${target}
+ PUBLIC
+  "ApplicationServerODataPlugin.Precompiled.h"
+ )
 target_link_libraries(${target} ApplicationServerCore ApplicationServerInterface ODataServer)
 install(TARGETS ${target} EXPORT ${target} 
 LIBRARY DESTINATION "${LIB_FOLDER}"
