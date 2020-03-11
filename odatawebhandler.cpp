@@ -1,7 +1,7 @@
 #include "odatawebhandler.h"
 #include <QDebug>
 #include <QJsonDocument>
-
+#include <QtXml>
 ODataWebHandler::ODataWebHandler(QObject *parent)
     : WebInterface(parent)
 {
@@ -14,6 +14,7 @@ QString ODataWebHandler::getName() const
 
 QHttpServerResponse ODataWebHandler::execute(const QHttpServerRequest *request, ApplicationServerInterface *app)
 {
+	QHttpServerResponse * response = nullptr;
     if (!this->requestHandlers.contains(request->url().host()))
     {
         qDebug() << "create request handler: " + request->url().host();
@@ -31,12 +32,21 @@ QHttpServerResponse ODataWebHandler::execute(const QHttpServerRequest *request, 
     switch (result.type())
     {
     case QMetaType::QJsonObject:
-        return result.toJsonObject();
+    	response = new QHttpServerResponse(result.toJsonObject());
         break;
     default:
-        return result.toString();
+    	QString resultString = result.toString();
+    	if(resultString.startsWith("XML:")){
+    		resultString = resultString.remove(0,4);
+        	response = new QHttpServerResponse(QByteArrayLiteral("application/xml"), resultString.toUtf8());
+    	}else{
+        	response = new QHttpServerResponse(resultString);
+    	}
         break;
     }
+    QHttpServerResponse resp = QHttpServerResponse(response->mimeType(), response->data(),response->statusCode());
+    resp.addHeader("OData-Version", "4.0");
+    return resp;
 }
 
 QString ODataWebHandler::getRoute(ApplicationServerInterface *app)
