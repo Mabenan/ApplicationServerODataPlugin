@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QJsonDocument>
 #include <QtXml>
+#include <OData.h>
 ODataWebHandler::ODataWebHandler(QObject *parent)
     : WebInterface(parent)
 {
@@ -28,7 +29,17 @@ QHttpServerResponse ODataWebHandler::execute(const QHttpServerRequest *request, 
     }
 
     ODataRequestHandler *requestHandler = this->requestHandlers[request->url().host()];
-    QVariant result = requestHandler->handleRequest(request->url(), request->query(), request->body(), request->headers(), static_cast<ODataRequestHandler::Method>(request->method()));
+    QVariant result;
+    QHttpServerResponse::StatusCode statusCode = QHttpServerResponse::StatusCode::Ok;
+    try{
+    result = requestHandler->handleRequest(request->url(), request->query(), request->body(), request->headers(), static_cast<ODataRequestHandler::Method>(request->method()));
+
+    }catch (ODataException &oex){
+
+    	qDebug() << oex.what();
+    	result = oex.errorBody;
+    	statusCode = QHttpServerResponse::StatusCode::NotFound;
+    }
     switch (result.type())
     {
     case QMetaType::QJsonObject:
@@ -44,7 +55,7 @@ QHttpServerResponse ODataWebHandler::execute(const QHttpServerRequest *request, 
     	}
         break;
     }
-    QHttpServerResponse resp = QHttpServerResponse(response->mimeType(), response->data(),response->statusCode());
+    QHttpServerResponse resp = QHttpServerResponse(response->mimeType(), response->data(),statusCode);
     resp.addHeader("OData-Version", "4.0");
     return resp;
 }
