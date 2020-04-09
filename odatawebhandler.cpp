@@ -19,12 +19,17 @@ QHttpServerResponse ODataWebHandler::execute(const QHttpServerRequest *request, 
     if (!this->requestHandlers.contains(request->url().host()))
     {
         qDebug() << "create request handler: " + request->url().host();
-        QList<QObject *> schemas = app->getValues("ODATA_SCHEMA_MAP");
+        QList<QObject *> entityContainers = app->getValues("ODATA_ENTITY_MAP");
         QMap<QString, ODataSchema *> schemaMap;
-        for(QObject * schemaGeneric: schemas){
-        	ODataSchema * schema = static_cast<ODataSchema *>(schemaGeneric);
-        	schemaMap.insert(schema->_namespace, schema);
+        ODataEntityContainer * mergedEntityContainer = new ODataEntityContainer();
+        for(QObject * entityContainerGeneric: entityContainers){
+        	ODataEntityContainer * entityContainer = static_cast<ODataEntityContainer *>(entityContainerGeneric);
+        		mergedEntityContainer->actionImports.unite(entityContainer->actionImports);
+        		mergedEntityContainer->functions.unite(entityContainer->functions);
+        		mergedEntityContainer->entitySets.unite(entityContainer->entitySets);
         }
+    	ODataSchema * schema = new ODataSchema("Default", mergedEntityContainer);
+    	schemaMap.insert(schema->_namespace, schema);
         this->requestHandlers.insert(request->url().host(), new ODataRequestHandler(request->url().host(), "/odata/", schemaMap, this));
     }
 
